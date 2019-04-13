@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="housePrice.css">
+    <meta charset="UTF-8">
+    <title>House Price Predictor</title>
+</head>
+<body>
+
+
+<div id="form">
+    <p>House Price Predictor
+    </p>
+    <span>
+        <input id="inpsqft" type="number" name="sqft">
+        <label for="inpsqft">Square Feet</label>
+    </span>
+    <span>
+        <input id="inpyrblt" type="number" name="yrblt">
+        <label for="inpyrblt">Year Built</label>
+    </span>
+    <span>
+        <input id="inpyrrem" type="number" name="yrrem">
+        <label for="inpyrrem">Year Remodeled</label>
+    </span>
+    <span>
+        <input id="housePrice" type="number">
+        <label for="housePrice">House Price</label>
+
+    </span>
+    <button onclick='document.getElementById("housePrice").value = 10.50;'>Calculate Price</button>
+</div>
+
+</body>
+</html>

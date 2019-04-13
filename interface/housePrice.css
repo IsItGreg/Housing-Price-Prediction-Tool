@@ -12,4 +12,11 @@ span {
 #form {
     display: flex;
     flex-direction: column;
+    background-color: blanchedalmond;
+    padding: 10px;
 }
+
+#title {
+    margin: 5px;
+}
+

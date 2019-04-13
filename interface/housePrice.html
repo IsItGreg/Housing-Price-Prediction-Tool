@@ -9,27 +9,26 @@
 
 
 <div id="form">
-    <p>House Price Predictor
-    </p>
+    <p id="title">House Price Predictor</p>
     <span>
-        <input id="inpsqft" type="number" name="sqft">
+        <input class="inpel" id="inpsqft" type="number" name="sqft">
         <label for="inpsqft">Square Feet</label>
     </span>
     <span>
-        <input id="inpyrblt" type="number" name="yrblt">
+        <input class="inpel" id="inpyrblt" type="number" name="yrblt">
         <label for="inpyrblt">Year Built</label>
     </span>
     <span>
-        <input id="inpyrrem" type="number" name="yrrem">
+        <input class="inpel"  id="inpyrrem" type="number" name="yrrem">
         <label for="inpyrrem">Year Remodeled</label>
     </span>
     <span>
         <input id="housePrice" type="number">
         <label for="housePrice">House Price</label>
-
     </span>
-    <button onclick='document.getElementById("housePrice").value = 10.50;'>Calculate Price</button>
+    <button style="margin: 5px;" onclick="calculatePrice()">Calculate Price</button>
 </div>
 
+<script src="housePrice.js"></script>
 </body>
 </html>

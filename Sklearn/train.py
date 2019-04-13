@@ -4,6 +4,7 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pickle
+import json
 import os
 
 def load_data(filename):
@@ -31,7 +32,7 @@ def load_data(filename):
 
 
 def main():
-    parser = argparse.ArgumentParser
+    parser = argparse.ArgumentParser()
 
     parser.add_argument("--data_dir",
                         default="data_dir",
@@ -50,22 +51,31 @@ def main():
         os.mkdir(args.output_dir)
 
     # load data into numpy array
-    X_train, y_train, X_val, y_val = load_data(args.data_filename)
+    X_train, y_train, X_val, y_val = load_data(args.data_dir)
 
     # create model
     model = LinearRegression(normalize=True)
 
-    # train the model with the x, and y numpy arrays
+    # train the model with the X, and y train numpy arrays
     model.fit(X_train, y_train)
 
+    # get score with the X, and y dev numpy arrays
     score = model.score(X_val, y_val)
 
-    print("score: {}".format(score))
+    # save score
+    with open(os.path.join(args.output_dir, "score.txt"), "w") as fp:
+        fp.write("score: {}".format(score))
 
-    # save the model
+    # save_parameters
+    parameters = model.get_params()
+    with open(os.path.join(args.output_dir, "params.json"), "w") as fp:
+        json.dump(parameters, fp)
+
+    # save the model weights
     pickle.dump(model, open(os.path.join(args.output_dir, "trained_model"), 'wb'))
 
-    # weights = model.
+
+
 
 
 

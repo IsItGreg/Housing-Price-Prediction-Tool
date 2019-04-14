@@ -5,6 +5,7 @@ import sys
 from flask import Flask, jsonify, render_template, request, redirect, Response
 import random, json
 from run_folder.run import run_regressor
+from geopy.geocoders import Nominatim
 
 app = Flask(__name__)
 
@@ -19,9 +20,22 @@ def output():
 def worker():
     # read json + reply
     values = request.args.listvalues()
+    geolocator = Nominatim(user_agent="thisisatest")
     listval = []
-    for x in values:
-        listval.append(int(x[0]))
+    addr = ''
+    for i, x in enumerate(values):
+        if i < 8:
+            listval.append(int(x[0]))
+        else:
+            addr += x[0] + ' '
+
+    print(addr)
+    location = geolocator.geocode(addr)
+    listval.append(location.latitude)
+    listval.append(location.longitude)
+
+    print(listval)
+
 
     #  listval is list of numbers
     result = run_regressor(listval)

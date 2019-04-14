@@ -32,7 +32,7 @@ def run_regressor(data, model_filename):
     model = pickle.load(open(model_filename, 'rb'))
 
     # get prediction
-    output = model.predict(inputs)
+    output = np.exp(model.predict(inputs))-1
 
     # return prediction
     return output

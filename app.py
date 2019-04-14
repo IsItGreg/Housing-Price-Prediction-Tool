@@ -1,11 +1,13 @@
 import pandas as pd
+from tqdm import tqdm
 import numpy as np
 from geopy import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
+import time
 
 
 def main():
-    data = pd.read_csv("ass.csv")
+    data = pd.read_csv("Sklearn/data/splittt/csv_3.csv")
     geolocator = Nominatim(user_agent="specify_your_app_name_here")
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 
@@ -21,7 +23,7 @@ def main():
 
     latlong = pd.DataFrame({'LAT': [], 'LON': []})
 
-    for i, row in data.iterrows():
+    for i, row in tqdm(data.iterrows()):
         addr = row['ST_NUM'] + ' ' + row['ST_NAME'] + ' ' + row['ST_NAME_SUF'] + ' Boston, MA'
         location = geolocator.geocode(addr)
         if location is None:
@@ -29,11 +31,14 @@ def main():
         else:
             latlong.loc[i] = [location.latitude, location.longitude]
 
-    newarr["LAT"] = latlong.pop("LAT")
-    newarr["LON"] = latlong.pop("LON")
-    newarr["AV_TOTAL"] = data.pop("AV_TOTAL")
+        if i % 250 == 0:
+            time.sleep(30)
 
-    newarr.to_csv('formatted.csv', index=False)
+            newarr["LAT"] = latlong.pop("LAT")
+            newarr["LON"] = latlong.pop("LON")
+            newarr["AV_TOTAL"] = data.pop("AV_TOTAL")
+
+            newarr.to_csv('formatted.csv', index=False)
 
 
 if __name__ == '__main__':

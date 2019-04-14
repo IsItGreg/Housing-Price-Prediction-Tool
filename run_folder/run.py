@@ -13,7 +13,7 @@ from sklearn.preprocessing import normalize, StandardScaler
 MODEL_FILENAME = "run_folder/SGDRegressor_4/trained_model.sav"
 
 
-def create_inputs(data, do_normalize=True, do_scale=True):
+def create_inputs(data, do_normalize=True, do_scale=False):
     """
     recieves a list of model inputs
     :param data: (list[10]) containing model inputs

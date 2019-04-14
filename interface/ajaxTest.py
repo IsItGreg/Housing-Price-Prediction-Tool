@@ -39,6 +39,8 @@ def worker():
     #  listval is list of numbers
     result = run_regressor(listval)
 
+    print(result[0])
+
     return jsonify(result=result[0])
 
 

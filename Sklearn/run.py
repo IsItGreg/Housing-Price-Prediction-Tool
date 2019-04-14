@@ -4,9 +4,6 @@
 import numpy as np
 import pickle
 
-from sklearn.linear_model import LinearRegression
-from sklearn.neural_network import MLPRegressor
-
 MODEL_FILENAME = "test/trained_model.sav"
 
 
@@ -17,7 +14,7 @@ def create_inputs(data):
     :return:
     numpy array[n_features] that has correct corresponding columns
     """
-    inputs = np.array([[5, 6]])
+    inputs = np.array([data])
     return inputs
 
 

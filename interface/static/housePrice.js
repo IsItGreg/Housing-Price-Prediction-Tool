@@ -7,9 +7,9 @@ function calculatePrice(){
     for(let i = 0; i < inputs.length; ++i){
         valueList[inputs[i].id] = inputs[i].value;
     }
-
+    console.log(valueList);
     $.getJSON('receiver', valueList, function(data){
-        document.getElementById("housePrice").value = data.result;
+        document.getElementById("housePrice").value = Math.round(parseInt(data.result) * 100) / 100;
     });
 
 }
@@ -46,6 +46,9 @@ function fillDefaults(){
 
     if(document.getElementById("inpnumhbrooms").value === "")
         document.getElementById("inpnumhbrooms").value = 0;
+
+    if(document.getElementById("inpadrl3").value === "")
+        document.getElementById("inpadrl3").value = '02150';
 
 
 }

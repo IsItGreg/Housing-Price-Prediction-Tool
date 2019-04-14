@@ -14,7 +14,7 @@ MODEL_FILENAME = "run_folder/SGDRegressor_5/trained_model.sav"
 SCALER_FILENAME = "run_folder/SGDRegressor_5/scaler.sav"
 
 
-def create_inputs(data, do_normalize=True, do_scale=True):
+def create_inputs(data, do_normalize=True, do_scale=False):
     """
     recieves a list of model inputs
     :param data: (list[10]) containing model inputs

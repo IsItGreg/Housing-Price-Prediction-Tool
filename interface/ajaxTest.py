@@ -4,6 +4,7 @@ import sys
 
 from flask import Flask, jsonify, render_template, request, redirect, Response
 import random, json
+from run_folder.run import run_regressor
 
 app = Flask(__name__)
 
@@ -23,10 +24,9 @@ def worker():
         listval.append(int(x[0]))
 
     #  listval is list of numbers
+    result = run_regressor(listval)
 
-    print(listval)
-    result = 101010101
-    return jsonify(result=result)
+    return jsonify(result=result[0])
 
 
 if __name__ == '__main__':

@@ -10,12 +10,12 @@ import pandas as pd
 from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet, LinearRegression
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize, StandardScaler
 
 from run import run_regressor
 
 
-def load_data(filename, do_normalize=True):
+def load_data(filename, args, do_normalize=True, do_scale=True):
     '''
     takes in the filename of the csv dataset, returns numpy arrays for the
     inputs and labels for the train and dev set
@@ -49,12 +49,20 @@ def load_data(filename, do_normalize=True):
     # get the targets
     y = df.pop("AV_TOTAL").values
 
+    if do_normalize:
+        X = normalize(X, norm='max')
+
+    if do_scale:
+        scaler = StandardScaler()
+        scaler.fit(X)
+        X = scaler.transform(X)
+        scaler_filename = os.path.join(args.output_dir, "scaler.sav")
+        pickle.dump(scaler, open(scaler_filename, 'wb'))
+
     # Split into train and test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    if do_normalize:
-        X_train = normalize(X_train, norm='max')
-        X_test = normalize(X_test, norm='max')
+
     # sample data
     # X_train = np.array([[1, 0, 0], [0, 1, 0]])
     # y_train = np.array([1, 4])
@@ -72,7 +80,7 @@ def main():
                         required=False,
                         help="the input dataset to be used to train the model")
     parser.add_argument("--output_dir",
-                        default="SGDRegressor_2",
+                        default="SGDRegressor_5",
                         type=str,
                         required=False,
                         help="the output file for the ")
@@ -89,20 +97,20 @@ def main():
         os.mkdir(args.output_dir)
 
     # load data into numpy array
-    X_train, y_train, X_val, y_val = load_data(args.data_dir)
+    X_train, y_train, X_val, y_val = load_data(args.data_dir, args)
 
     # create model
     if args.model_type == "Lasso":
         # change the alpha value for shit
         model = Lasso(alpha=.1, fit_intercept=True, normalize=True,
-            precompute=False, copy_X=True, max_iter=100000, tol=0.0001,
+            precompute=False, copy_X=True, max_iter=100000, tol=0.000001,
             warm_start=False, positive=True, random_state=None,
             selection='cyclic')
     elif args.model_type == "SGDRegressor":
         model = SGDRegressor(loss='squared_epsilon_insensitive',
             penalty='elasticnet', alpha=0.1,
-            l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=.001,
-            shuffle=True, verbose=0, epsilon=0.1, random_state=None,
+            l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=.00000001,
+            shuffle=True, verbose=1, epsilon=0.1, random_state=None,
             learning_rate='optimal', eta0=0.001, power_t=0.25,
             early_stopping=False, validation_fraction=0.1,
             n_iter_no_change=100, warm_start=False, average=False,
@@ -121,11 +129,11 @@ def main():
             copy_X=True, n_jobs=None)
 
     # train the model with the X, and y train numpy arrays
-    model.fit(X_train, y_train)
+    model.fit(X_train, np.log(y_train+1))
 
     # get score with the X, and y dev numpy arrays
-    test_score = model.score(X_val, y_val)
-    train_score = model.score(X_train, y_train)
+    test_score = model.score(X_val, np.log(y_val+1))
+    train_score = model.score(X_train, np.log(y_train+1))
     print("train: {}, test: {}".format(train_score, test_score))
 
     # save_parameters

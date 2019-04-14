@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # used to get predictions from the model
 # simply takes in inputs and returns the results
 # probably use flask, worry about this later
@@ -37,5 +37,3 @@ def run_regressor(data, model_filename):
 
     # return prediction
     return output
-=======
->>>>>>> 082f3dc435a83dc433b1e2b562ff7489c0caea19

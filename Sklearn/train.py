@@ -77,7 +77,7 @@ def main():
                         required=False,
                         help="the output file for the ")
     parser.add_argument("--model_type",
-                        default="SGDRegressor",
+                        default="SVR",
                         type=str,
                         required=False,
                         help="the kind of model to use "
@@ -100,7 +100,7 @@ def main():
             selection='cyclic')
     elif args.model_type == "SGDRegressor":
         model = SGDRegressor(loss='squared_epsilon_insensitive',
-            penalty='elasticnet', alpha=0.1,
+            penalty='l2', alpha=0.1,
             l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=.001,
             shuffle=True, verbose=0, epsilon=0.1, random_state=None,
             learning_rate='optimal', eta0=0.001, power_t=0.25,
@@ -113,9 +113,9 @@ def main():
             tol=0.0001, warm_start=False, positive=True, random_state=None,
             selection='cyclic')
     elif args.model_type == "SVR":
-        model = SVR(kernel='rbf', degree=3, gamma='auto', coef0=0.0,
-            tol=0.001, C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
-            verbose=False, max_iter=10000)
+        model = SVR(C=1.0, cache_size=200, coef0=0.0, degree=3, epsilon=0.1,
+    gamma='auto_deprecated', kernel='rbf', max_iter=1000, shrinking=True,
+    tol=0.001, verbose=False)
     elif args.model_type == "LinearRegression":
         model = LinearRegression(fit_intercept=True, normalize=False,
             copy_X=True, n_jobs=None)

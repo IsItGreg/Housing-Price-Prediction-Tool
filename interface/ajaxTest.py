@@ -20,19 +20,18 @@ def output():
 def worker():
     # read json + reply
     values = request.args.listvalues()
-    geolocator = Nominatim(user_agent="thisisatest")
+    #geolocator = Nominatim(user_agent="thisisatest")
     listval = []
     addr = ''
     for i, x in enumerate(values):
-        if i < 8:
+        if i < 9:
             listval.append(int(x[0]))
         else:
             addr += x[0] + ' '
 
-    print(addr)
-    location = geolocator.geocode(addr)
-    listval.append(location.latitude)
-    listval.append(location.longitude)
+    #location = geolocator.geocode(addr)
+    #listval.append(location.latitude)
+    #listval.append(location.longitude)
 
     print(listval)
 

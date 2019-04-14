@@ -67,12 +67,12 @@ def main():
                         required=False,
                         help="the input dataset to be used to train the model")
     parser.add_argument("--output_dir",
-                        default="SVR_0",
+                        default="SGDRegressor_2",
                         type=str,
                         required=False,
                         help="the output file for the ")
     parser.add_argument("--model_type",
-                        default="SVR",
+                        default="SGDRegressor",
                         type=str,
                         required=False,
                         help="the kind of model to use "
@@ -94,7 +94,7 @@ def main():
             warm_start=False, positive=True, random_state=None,
             selection='cyclic')
     elif args.model_type == "SGDRegressor":
-        model = SGDRegressor(loss='squared_loss', penalty='l2', alpha=0.00001,
+        model = SGDRegressor(loss='squared_epsilon_insensitive', penalty='l2', alpha=0.00001,
             l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=1,
             shuffle=True, verbose=0, epsilon=0.1, random_state=None,
             learning_rate='optimal', eta0=0.01, power_t=0.25,
@@ -107,7 +107,7 @@ def main():
             tol=0.0001, warm_start=False, positive=True, random_state=None,
             selection='cyclic')
     elif args.model_type == "SVR":
-        model = SVR(kernel='rbf', degree=3, gamma='auto_deprecated', coef0=0.0,
+        model = SVR(kernel='rbf', degree=3, gamma='auto', coef0=0.0,
             tol=0.001, C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
             verbose=False, max_iter=-1)
 
@@ -115,8 +115,9 @@ def main():
     model.fit(X_train, y_train)
 
     # get score with the X, and y dev numpy arrays
-    score = model.score(X_val, y_val)
-    print(score)
+    test_score = model.score(X_val, y_val)
+    train_score = model.score(X_train, y_train)
+    print("train: {}, test: {}".format(train_score, test_score))
 
     # save_parameters
     parameters = model.get_params()
@@ -134,7 +135,7 @@ def main():
 
     # save scorem outputs
     with open(os.path.join(args.output_dir, "score.txt"), "w") as fp:
-        fp.write("score: {}".format(score))
+        fp.write("train score: {}, test score:{}".format(train_score, test_score))
         fp.write(output)
 
 

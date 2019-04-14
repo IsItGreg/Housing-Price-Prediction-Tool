@@ -7,14 +7,15 @@ import json
 import os
 import pandas as pd
 
-from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet
+from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet, LinearRegression
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import normalize
 
 from run import run_regressor
 
 
-def load_data(filename):
+def load_data(filename, do_normalize=True):
     '''
     takes in the filename of the csv dataset, returns numpy arrays for the
     inputs and labels for the train and dev set
@@ -23,6 +24,7 @@ def load_data(filename):
     def and test sets
 
     :param filename: (str) csv file with data
+    :param do_normalize: (bool) normalize if true
     :return:
         X_train: numpy array (n_train_samples*n_features)
         y_train: numpy array (n_train_samples)
@@ -48,14 +50,17 @@ def load_data(filename):
     y = df.pop("AV_TOTAL").values
 
     # Split into train and test
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+    if do_normalize:
+        X_train = normalize(X_train, norm='max')
+        X_test = normalize(X_test, norm='max')
     # sample data
     # X_train = np.array([[1, 0, 0], [0, 1, 0]])
     # y_train = np.array([1, 4])
     # X_val = np.array([[1, 0, 0]])
     # y_val = np.array([1])
-    return X_train, y_train, X_val, y_val
+    return X_train, y_train, X_test, y_test
 
 
 def main():
@@ -76,7 +81,7 @@ def main():
                         type=str,
                         required=False,
                         help="the kind of model to use "
-                        "[Lasso, SGDRegressor, ElasticNet, SVR]")
+                        "[Lasso, SGDRegressor, ElasticNet, SVR, LinearRegression]")
 
     args = parser.parse_args()
 
@@ -94,12 +99,13 @@ def main():
             warm_start=False, positive=True, random_state=None,
             selection='cyclic')
     elif args.model_type == "SGDRegressor":
-        model = SGDRegressor(loss='squared_epsilon_insensitive', penalty='l2', alpha=0.00001,
-            l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=1,
+        model = SGDRegressor(loss='squared_epsilon_insensitive',
+            penalty='elasticnet', alpha=0.1,
+            l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=.001,
             shuffle=True, verbose=0, epsilon=0.1, random_state=None,
-            learning_rate='optimal', eta0=0.01, power_t=0.25,
+            learning_rate='optimal', eta0=0.001, power_t=0.25,
             early_stopping=False, validation_fraction=0.1,
-            n_iter_no_change=1000, warm_start=False, average=False,
+            n_iter_no_change=100, warm_start=False, average=False,
             n_iter=None)
     elif args.model_type == "ElasticNet":
         model = ElasticNet(alpha=.000001, l1_ratio=0.5, fit_intercept=True,
@@ -109,7 +115,10 @@ def main():
     elif args.model_type == "SVR":
         model = SVR(kernel='rbf', degree=3, gamma='auto', coef0=0.0,
             tol=0.001, C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
-            verbose=False, max_iter=-1)
+            verbose=False, max_iter=10000)
+    elif args.model_type == "LinearRegression":
+        model = LinearRegression(fit_intercept=True, normalize=False,
+            copy_X=True, n_jobs=None)
 
     # train the model with the X, and y train numpy arrays
     model.fit(X_train, y_train)
@@ -125,12 +134,12 @@ def main():
         json.dump(parameters, fp)
 
     # save the model weights
-    pickle.dump(model, open(os.path.join(
-        args.output_dir, "trained_model.sav"), 'wb'))
+    model_weights_filename = os.path.join(args.output_dir, "trained_model.sav")
+    pickle.dump(model, open(model_weights_filename, 'wb'))
 
     # get outputs
     output = str()
-    for prediction, label in zip(run_regressor(X_val), y_val):
+    for prediction, label in zip(run_regressor(X_val, model_weights_filename), y_val):
         output+="{}, {}\n".format(prediction, label)
 
     # save scorem outputs

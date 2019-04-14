@@ -4,8 +4,6 @@
 import numpy as np
 import pickle
 
-MODEL_FILENAME = "test/trained_model.sav"
-
 
 def create_inputs(data):
     """
@@ -14,14 +12,16 @@ def create_inputs(data):
     :return:
     numpy array[n_features] that has correct corresponding columns
     """
-    inputs = np.array([data])
-    return inputs
+    inputs = np.array(data)
+    #return inputs
+    return data
 
 
-def run_regressor(data):
+def run_regressor(data, model_filename):
     """
-    recieves ??? and returns the prediction from the model
+    recieves np array of validation data, returns predictions for them
     :param data:
+    :param model_filename: (str) filename of model to load
     :return:
     """
 
@@ -29,7 +29,7 @@ def run_regressor(data):
     inputs = create_inputs(data)
 
     # load model
-    model = pickle.load(open(MODEL_FILENAME, 'rb'))
+    model = pickle.load(open(model_filename, 'rb'))
 
     # get prediction
     output = model.predict(inputs)

@@ -62,7 +62,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--data_dir",
-                        default="data/prop_2019.csv",
+                        default="data/formatted.csv",
                         type=str,
                         required=False,
                         help="the input dataset to be used to train the model")
@@ -123,16 +123,15 @@ def main():
     pickle.dump(model, open(os.path.join(
         args.output_dir, "trained_model.sav"), 'wb'))
 
+    # get outputs
     output = str()
     for prediction, label in zip(run_regressor(X_val), y_val):
         output+="{}, {}\n".format(prediction, label)
 
-    # save score
+    # save scorem outputs
     with open(os.path.join(args.output_dir, "score.txt"), "w") as fp:
         fp.write("score: {}".format(score))
         fp.write(output)
-
-
 
 
 if __name__ == '__main__':

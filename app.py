@@ -7,7 +7,11 @@ import time
 
 
 def main():
+<<<<<<< HEAD
     data = pd.read_csv("Sklearn/data/splittt/csv_3.csv")
+=======
+    data = pd.read_csv("csv_1.csv")
+>>>>>>> f94d1116bcdf9b572eb9b2def90f00a82bea3407
     geolocator = Nominatim(user_agent="specify_your_app_name_here")
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 
@@ -30,6 +34,10 @@ def main():
             latlong.loc[i] = [42.3602534, -71.0582912]
         else:
             latlong.loc[i] = [location.latitude, location.longitude]
+        if i % 100 == 0:
+            print(i)
+        if i % 500 == 0:
+            time.sleep(15)
 
         if i % 250 == 0:
             time.sleep(30)

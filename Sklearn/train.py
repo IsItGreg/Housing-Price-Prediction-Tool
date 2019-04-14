@@ -8,6 +8,7 @@ import os
 import pandas as pd
 
 from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet
+from sklearn.model_selection import train_test_split
 
 from run import run_regressor
 
@@ -28,19 +29,32 @@ def load_data(filename):
         y_dev: numpy array (n_dev_samples)
     '''
     df = pd.read_csv(filename)
+    arrays = []
+    arrays.append(np.array(df.pop("ZIPCODE").values))
+    arrays.append(np.array(df.pop("LAND_SF").values))
+    arrays.append(np.array(df.pop("YR_BUILT").values))
+    arrays.append(np.array(df.pop("NUM_FLOORS").values))
+    arrays.append(np.array(df.pop("U_NUM_PARK").values))
+    arrays.append(np.array(df.pop("T_TOT_RMS").values))
+    arrays.append(np.array(df.pop("T_BDRMS").values))
+    arrays.append(np.array(df.pop("T_FULL_BTH").values))
+    arrays.append(np.array(df.pop("T_HALF_BTH").values))
 
+
+
+    X = np.array(arrays)
+    X = np.transpose(X)
     # get the targets
-    y = train.pop("AV_TOTAL")
+    y = df.pop("AV_TOTAL").values
 
-    #df.drop(["ST_NUM", ])
+    # Split into train and test
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
 
-    array = df.values
-
-    #sample data
-    X_train = np.array([[1, 2], [3, 4]])
-    y_train = np.array([4, 6])
-    X_val = np.array([[1, 2], [3, 4], [5, 6]])
-    y_val = np.array([4, 6, 8])
+    # sample data
+    # X_train = np.array([[1, 0, 0], [0, 1, 0]])
+    # y_train = np.array([1, 4])
+    # X_val = np.array([[1, 0, 0]])
+    # y_val = np.array([1])
     return X_train, y_train, X_val, y_val
 
 
@@ -48,17 +62,17 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--data_dir",
-                        default="prop_dat_2019.csv",
+                        default="data/prop_2019.csv",
                         type=str,
                         required=False,
                         help="the input dataset to be used to train the model")
     parser.add_argument("--output_dir",
-                        default="test",
+                        default="Lasso_1",
                         type=str,
                         required=False,
                         help="the output file for the ")
     parser.add_argument("--model_type",
-                        default="ElasticNet",
+                        default="Lasso",
                         type=str,
                         required=False,
                         help="the kind of model to use "
@@ -75,22 +89,22 @@ def main():
     # create model
     if args.model_type == "Lasso":
         # change the alpha value for shit
-        model = Lasso(alpha=0.01, fit_intercept=True, normalize=True,
-            precompute=False, copy_X=True, max_iter=1000, tol=0.0001,
-            warm_start=False, positive=False, random_state=None,
+        model = Lasso(alpha=.1, fit_intercept=True, normalize=True,
+            precompute=False, copy_X=True, max_iter=100000, tol=0.0001,
+            warm_start=False, positive=True, random_state=None,
             selection='cyclic')
     elif args.model_type == "SGDRegressor":
-        model = SGDRegressor(loss='squared_loss', penalty='l2', alpha=0.001,
-            l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None,
+        model = SGDRegressor(loss='squared_loss', penalty='l2', alpha=0.00001,
+            l1_ratio=0.15, fit_intercept=True, max_iter=10000, tol=1,
             shuffle=True, verbose=0, epsilon=0.1, random_state=None,
-            learning_rate='invscaling', eta0=0.01, power_t=0.25,
+            learning_rate='optimal', eta0=0.01, power_t=0.25,
             early_stopping=False, validation_fraction=0.1,
-            n_iter_no_change=5, warm_start=False, average=False,
+            n_iter_no_change=1000, warm_start=False, average=False,
             n_iter=None)
     elif args.model_type == "ElasticNet":
-        model = ElasticNet(alpha=0.1, l1_ratio=0.5, fit_intercept=True,
-            normalize=True, precompute=False, max_iter=1000, copy_X=True,
-            tol=0.0001, warm_start=False, positive=False, random_state=None,
+        model = ElasticNet(alpha=.000001, l1_ratio=0.5, fit_intercept=True,
+            normalize=True, precompute=False, max_iter=10000, copy_X=True,
+            tol=0.0001, warm_start=False, positive=True, random_state=None,
             selection='cyclic')
 
     # train the model with the X, and y train numpy arrays
@@ -98,10 +112,7 @@ def main():
 
     # get score with the X, and y dev numpy arrays
     score = model.score(X_val, y_val)
-
-    # save score
-    with open(os.path.join(args.output_dir, "score.txt"), "w") as fp:
-        fp.write("score: {}".format(score))
+    print(score)
 
     # save_parameters
     parameters = model.get_params()
@@ -112,7 +123,16 @@ def main():
     pickle.dump(model, open(os.path.join(
         args.output_dir, "trained_model.sav"), 'wb'))
 
-    print(run_regressor("ass"))
+    output = str()
+    for prediction, label in zip(run_regressor(X_val), y_val):
+        output+="{}, {}\n".format(prediction, label)
+
+    # save score
+    with open(os.path.join(args.output_dir, "score.txt"), "w") as fp:
+        fp.write("score: {}".format(score))
+        fp.write(output)
+
+
 
 
 if __name__ == '__main__':

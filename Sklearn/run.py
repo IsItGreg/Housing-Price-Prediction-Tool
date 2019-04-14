@@ -4,10 +4,9 @@
 import numpy as np
 import pickle
 
-from sklearn.linear_model import LinearRegression
-from sklearn.neural_network import MLPRegressor
+from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet
 
-MODEL_FILENAME = "test/trained_model.sav"
+MODEL_FILENAME = "Lasso_1/trained_model.sav"
 
 
 def create_inputs(data):
@@ -17,7 +16,7 @@ def create_inputs(data):
     :return:
     numpy array[n_features] that has correct corresponding columns
     """
-    inputs = np.array([[5, 6]])
+    inputs = data
     return inputs
 
 

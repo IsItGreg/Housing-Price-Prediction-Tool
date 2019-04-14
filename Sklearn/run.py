@@ -15,7 +15,7 @@ def create_inputs(data):
     numpy array[n_features] that has correct corresponding columns
     """
     inputs = np.array([data])
-    return inputs
+    return data
 
 
 def run_regressor(data):

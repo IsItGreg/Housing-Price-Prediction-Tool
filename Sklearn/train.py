@@ -72,7 +72,7 @@ def main():
                         required=False,
                         help="the output file for the ")
     parser.add_argument("--model_type",
-                        default="SVR",
+                        default="SGDRegressor",
                         type=str,
                         required=False,
                         help="the kind of model to use "

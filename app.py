@@ -2,10 +2,11 @@ import pandas as pd
 import numpy as np
 from geopy import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
+import time
 
 
 def main():
-    data = pd.read_csv("ass.csv")
+    data = pd.read_csv("csv_1.csv")
     geolocator = Nominatim(user_agent="specify_your_app_name_here")
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 
@@ -28,6 +29,10 @@ def main():
             latlong.loc[i] = [42.3602534, -71.0582912]
         else:
             latlong.loc[i] = [location.latitude, location.longitude]
+        if i % 100 == 0:
+            print(i)
+        if i % 500 == 0:
+            time.sleep(15)
 
     newarr["LAT"] = latlong.pop("LAT")
     newarr["LON"] = latlong.pop("LON")

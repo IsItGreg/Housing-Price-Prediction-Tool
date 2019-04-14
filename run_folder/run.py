@@ -10,7 +10,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize, StandardScaler
 
 
-MODEL_FILENAME = "run_folder/SGDRegressor_4/trained_model.sav"
+MODEL_FILENAME = "run_folder/SGDRegressor_5/trained_model.sav"
+SCALER_FILENAME = "run_folder/SGDRegressor_5/scaler.sav"
 
 
 def create_inputs(data, do_normalize=True, do_scale=True):
@@ -26,10 +27,9 @@ def create_inputs(data, do_normalize=True, do_scale=True):
         inputs = normalize(inputs, norm='max')
 
     if do_scale:
-        scaler = StandardScaler()
+        scaler = pickle.load(open(SCALER_FILENAME, 'rb'))
         scaler.fit(inputs)
         inputs = scaler.transform(inputs)
-
     return inputs
 
 

@@ -8,6 +8,7 @@ import os
 import pandas as pd
 
 from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet
+from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
 
 from run import run_regressor
@@ -30,16 +31,15 @@ def load_data(filename):
     '''
     df = pd.read_csv(filename)
     arrays = []
-    arrays.append(np.array(df.pop("ZIPCODE").values))
     arrays.append(np.array(df.pop("LAND_SF").values))
     arrays.append(np.array(df.pop("YR_BUILT").values))
     arrays.append(np.array(df.pop("NUM_FLOORS").values))
-    arrays.append(np.array(df.pop("U_NUM_PARK").values))
-    arrays.append(np.array(df.pop("T_TOT_RMS").values))
-    arrays.append(np.array(df.pop("T_BDRMS").values))
-    arrays.append(np.array(df.pop("T_FULL_BTH").values))
-    arrays.append(np.array(df.pop("T_HALF_BTH").values))
-
+    arrays.append(np.array(df.pop("NUM_PARK").values))
+    arrays.append(np.array(df.pop("NUM_RMS").values))
+    arrays.append(np.array(df.pop("NUM_BDRMS").values))
+    arrays.append(np.array(df.pop("NUM_FULL_BTH").values))
+    arrays.append(np.array(df.pop("NUM_HALF_BTH").values))
+    arrays.append(np.array(df.pop("ZIP_CODE").values))
 
 
     X = np.array(arrays)
@@ -67,16 +67,16 @@ def main():
                         required=False,
                         help="the input dataset to be used to train the model")
     parser.add_argument("--output_dir",
-                        default="Lasso_1",
+                        default="SVR_0",
                         type=str,
                         required=False,
                         help="the output file for the ")
     parser.add_argument("--model_type",
-                        default="Lasso",
+                        default="SVR",
                         type=str,
                         required=False,
                         help="the kind of model to use "
-                        "[Lasso, SGDRegressor, ElasticNet]")
+                        "[Lasso, SGDRegressor, ElasticNet, SVR]")
 
     args = parser.parse_args()
 
@@ -106,6 +106,10 @@ def main():
             normalize=True, precompute=False, max_iter=10000, copy_X=True,
             tol=0.0001, warm_start=False, positive=True, random_state=None,
             selection='cyclic')
+    elif args.model_type == "SVR":
+        model = SVR(kernel='rbf', degree=3, gamma='auto_deprecated', coef0=0.0,
+            tol=0.001, C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
+            verbose=False, max_iter=-1)
 
     # train the model with the X, and y train numpy arrays
     model.fit(X_train, y_train)

@@ -4,8 +4,6 @@
 import numpy as np
 import pickle
 
-from sklearn.linear_model import Lasso, SGDRegressor, ElasticNet
-
 MODEL_FILENAME = "test/trained_model.sav"
 
 

@@ -1,11 +1,15 @@
 # used to train the model and save the model weights
 
 import argparse
-from sklearn.linear_model import LinearRegression
 import numpy as np
 import pickle
 import json
 import os
+
+from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
+
+from run import run_regressor
 
 def load_data(filename):
     '''
@@ -24,10 +28,10 @@ def load_data(filename):
     '''
 
     #sample data
-    X_train = np.array([[3, 4], [1, 2]])
-    y_train = np.array([2, 4])
+    X_train = np.array([[3, 4], [1, 2], [5, 6]])
+    y_train = np.array([5, 3, 7])
     X_val = np.array([[3, 4], [1, 2]])
-    y_val = np.array([2, 4])
+    y_val = np.array([5, 3])
     return X_train, y_train, X_val, y_val
 
 
@@ -40,10 +44,16 @@ def main():
                         required=False,
                         help="the input dataset to be used to train the model")
     parser.add_argument("--output_dir",
-                        default="test",
+                        default="test_mlp",
                         type=str,
                         required=False,
                         help="the output file for the ")
+    parser.add_argument("--model_type",
+                        default="neural_network",
+                        type=str,
+                        required=False,
+                        help="the kind of model to use [logistic_regression, "
+                        "neural_network]")
 
     args = parser.parse_args()
 
@@ -54,7 +64,10 @@ def main():
     X_train, y_train, X_val, y_val = load_data(args.data_dir)
 
     # create model
-    model = LinearRegression(normalize=True)
+    if args.model_type == "logistic_regression":
+        model = LinearRegression(normalize=True)
+    elif args.model_type == "neural_network":
+        model = MLPRegressor(max_iter=5000, early_stopping=False)
 
     # train the model with the X, and y train numpy arrays
     model.fit(X_train, y_train)
@@ -72,12 +85,10 @@ def main():
         json.dump(parameters, fp)
 
     # save the model weights
-    pickle.dump(model, open(os.path.join(args.output_dir, "trained_model"), 'wb'))
+    pickle.dump(model, open(os.path.join(
+        args.output_dir, "trained_model.sav"), 'wb'))
 
-
-
-
-
+    print(run_regressor("ass"))
 
 
 if __name__ == '__main__':

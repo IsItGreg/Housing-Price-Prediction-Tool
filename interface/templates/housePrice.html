@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="housePrice.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static',filename='housePrice.css') }}">
     <meta charset="UTF-8">
     <title>House Price Predictor</title>
 </head>
@@ -23,12 +24,12 @@
         <label for="inpyrrem">Year Remodeled</label>
     </span>
     <span>
-        <input id="housePrice" type="number">
+        <input id="housePrice">
         <label for="housePrice">House Price</label>
     </span>
     <button style="margin: 5px;" onclick="calculatePrice()">Calculate Price</button>
 </div>
 
-<script src="housePrice.js"></script>
+<script src="{{ url_for('static',filename='housePrice.js') }}"></script>
 </body>
 </html>
